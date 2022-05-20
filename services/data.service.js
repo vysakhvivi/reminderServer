@@ -55,7 +55,7 @@ const login = (acno, pswd) => {
 
 }
 
-const addevent = (acno,date, des,uid) => {
+const addevent = (acno,date,time, des,uid) => {
 
   return db.User.findOne({ acno })
     .then(user => {
@@ -63,6 +63,7 @@ const addevent = (acno,date, des,uid) => {
         
         user.events.push({
           date: date,
+          time:time,
           description: des,
           uid:uid
         })
@@ -128,35 +129,46 @@ const deleteacc = (acno) => {
     })
 }
 
-const getcurrentdata=(rno)=>{
-  return db.user.findOne({events:rno})
-  .then(user => {
+//geet
+
+const deleteEvent = (toDeleteEventId) => {
+  return db.User.findOne({ uid: req.tokenUserId }).then((user) => {
     if (user) {
+      //console.log(user.reminderevent.toDeleteEventId);
+      const result = user.event.filter(
+        (reminderObj) => reminderObj.id !== toDeleteEventId
+      );
+
+      user.reminderevent = result;
+      user.save();
+      console.log(user);
+
       return {
-        statuscode: 200,
+        statusCode: 200,
         status: true,
-        events: user.events
-      }
-    }
-    else {
+        message: 'Event deleted!!',
+      };
+    } else {
       return {
-        statuscode: 401,
+        statusCode: 401,
         status: false,
-        message: "Rno. doesnot Exists..Please Register..!!! "
-      }
+        message: 'operation failed!!',
+      };
     }
-  })
+  });
+};
 
-}
 
-const updateevent=(uid)=>{
-  return db.user.findOne({events:uid})
+const updateevent=(date,time,des,uid)=>{
+  console.log(db.user.findOne({uid:uid}));
+  return db.user.findOne({uid:uid})
   .then(user => {
     if (user) {
       
       user.events.put({
         date: date,
         description: des,
+        time:time
       })
 
       user.save()
@@ -179,25 +191,6 @@ const updateevent=(uid)=>{
 
 }
 
-const deletedata=(i)=>{
-  return db.User.deleteOne({ events:i })
-    .then(user => {
-      if (!user) {
-        return {
-          statuscode: 401,
-          status: false,
-          message: "Operation Failed !! "
-        }
-      }
-      else {
-        return {
-          statuscode: 200,
-          status: true,
-          message: "Reminder has been successfully deleted..... "
-        }
-      }
-    })
-}
 
 
 
@@ -206,5 +199,5 @@ const deletedata=(i)=>{
 
 
 module.exports = {
-  register, login, addevent, events, deleteacc ,getcurrentdata ,deletedata
+  register, login, addevent, events, deleteacc, deleteEvent,updateevent
 }

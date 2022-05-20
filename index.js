@@ -38,7 +38,7 @@ app.post('/login',(req,res)=>{
 })
 
 app.post('/dashboard',(req,res)=>{
-    dataservice.addevent(req.body.acno,req.body.date,req.body.des,req.body.uid)
+    dataservice.addevent(req.body.acno,req.body.date,req.body.time,req.body.des,req.body.uid)
     .then(result=>{
      res.status(result.statuscode).json(result)
  })
@@ -58,19 +58,20 @@ app.delete('/ondelete/:acno',(req,res)=>{
     })
 })
 
-app.get('/updateform/:i',(req,res)=>{
-    dataservice.getcurrentdata(req.params.i)
+app.get('/updateform/:uid',(req,res)=>{
+    dataservice.updateevent(req.params.uid,req.body.date,req.body.time,req.body.des)
     .then(result=>{
         res.status(result.statuscode).json(result)
     })
 })
 
-app.delete('/deletedata/:i',(req,res)=>{
-    dataservice.deletedata(req.params.i)
-    .then(result=>{
-        res.status(result.statuscode).json(result)
-    })
-})
+//geet 
+
+app.delete('/deleteEvent/:toDeleteEventId', (req, res) => {
+    dataService.deleteEvent(req, req.params.toDeleteEventId).then((result) => {
+      res.status(result.statusCode).json(result);
+    });
+  });
 
 // app.updateevent('/updateform',(req,res)=>{
 //     dataservice.updateform(req.body.events.date,req.body.events.des,req.body.events.uid)
